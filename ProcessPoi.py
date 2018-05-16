@@ -8,13 +8,11 @@ import random as rand
 import interSimu
 from interSimu import Ui_MainWindow
 
-# Nombre de simulation
-NB_SIM = 100
 
 # Genere une liste de nombre aléatoire de taille NB_SIM en utilisant la fonction random de python
-def gene_rand():
+def gene_rand(nb):
     #Genere 100 nombres aleatoires a 4 decimales
-    l = [round(rand.random(),4) for i in range(NB_SIM)]
+    l = [round(rand.random(),4) for i in range(nb)]
     return l
 
 # Genere une liste de nombre suivant une loi exponentielle prenant en paramètre une liste de nombre aléatoire et lambda
@@ -27,7 +25,7 @@ def loiExpo(tabAlea, lambd):
 def loiExpoTheorique(lambd):
     resExpoTheo = []
     i = 0
-    for i in range(NB_SIM):
+    for i in range(nb):
         resExpoTheo.append(rand.expovariate(lambd))
     return resExpoTheo
 
@@ -46,9 +44,9 @@ def classeExp(tab):
 
 # Renvoie un tableau contenant uniquement des 1 entouré de deux 0
 # Cette liste permet ensuite de tracer le spectre de raie en montant à 1 pour chaque valeur de notre liste et restant à 0 le reste du temps
-def tabRaie():
+def tabRaie(nb):
     resRaie = []
-    for i in range(NB_SIM):
+    for i in range(nb):
         resRaie.append(0)
         resRaie.append(1)
         resRaie.append(0)
@@ -71,20 +69,46 @@ class ApplicationViewer(QMainWindow):
         self.ui = interSimu.Ui_MainWindow()
         self.ui.setupUi(self)
 
+
+
         # un clic sur le bouton appellera la méthode 'action_bouton'
         self.ui.validPara.clicked.connect(self.action_bouton)
 
     def action_bouton(self):
-        print(self.ui.nbEvt.toPlainText())
+        NB_SIM = int(self.ui.nbEvt.toPlainText())
+        print("NB_SIM  " + str(NB_SIM))
+        LAM_DA = float(self.ui.varLambdArr.toPlainText())
+        print("LAM_DA  " + str(LAM_DA))
+        LAM_TRT = float(self.ui.varLambdTrt.toPlainText())
+        print("LAM_TRT  " + str(LAM_TRT))
+
         x=[0,10,100]
         y=[3,4,5]
 
-        self.ui.graphArrivee.axes.set_xscale('log') # Nothing Happens
-        self.ui.graphArrivee.axes.set_title('GRAPH') # Nothing Happens
+        self.ui.graphArrivee.axes.set_xscale('log')
+        self.ui.graphArrivee.axes.set_title('GRAPH')
 
         self.ui.graphArrivee.axes.plot(x,y)
         self.ui.graphArrivee.draw()
 
+        print("tableau nombres aleatoires")
+        tabAlea = gene_rand(NB_SIM)
+        print(tabAlea)
+        print(len(tabAlea))
+
+        print("______________")
+        print("loi exponentielle Arrivee")
+        tabExpArr = loiExpo(tabAlea, LAM_DA)
+        tabExpArr.sort()
+        print(tabExpArr)
+
+        print("______________")
+        print("loi exponentielle Traitement")
+        tabExpTrt = loiExpo(tabAlea, LAM_TRT)
+        tabExpTrt.sort()
+        print(tabExpTrt)
+
+        sys.exit(app.exec_())
 
 # Fonction main
 if __name__=="__main__":
@@ -94,26 +118,16 @@ if __name__=="__main__":
     applicationViewer.show()
     app.exec_()
 
-    print("tableau nombres aleatoires")
-    tabAlea = gene_rand()
-    print(tabAlea)
-    print(len(tabAlea))
 
-    print("______________")
-    print("loi exponentielle")
 
-    tabExp = loiExpo(tabAlea, 0.05)
-    print(tabExp)
+
 
     print("______________")
     print("loi exponentielle theorique")
     tabExpoTheorique = loiExpoTheorique(0.05)
     print(tabExpoTheorique)
-    
-    print("______________")
-    print("tableau exponentionel trie")
-    tabExp.sort()
-    print(tabExp)
+
+
 
     print("______________")
     print("tableau expo theorique trie")

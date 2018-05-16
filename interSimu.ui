@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1130</width>
-    <height>690</height>
+    <height>910</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,19 +19,19 @@
      <rect>
       <x>430</x>
       <y>20</y>
-      <width>251</width>
-      <height>16</height>
+      <width>331</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>11</pointsize>
+      <pointsize>14</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>Simulation processus de Poisson</string>
+     <string>Simulation postes de fabrication</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
@@ -39,7 +39,7 @@
      <rect>
       <x>160</x>
       <y>80</y>
-      <width>751</width>
+      <width>821</width>
       <height>141</height>
      </rect>
     </property>
@@ -55,15 +55,15 @@
     <widget class="QLabel" name="confEvt">
      <property name="geometry">
       <rect>
-       <x>50</x>
+       <x>40</x>
        <y>50</y>
-       <width>131</width>
+       <width>171</width>
        <height>21</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
+       <pointsize>11</pointsize>
        <italic>false</italic>
       </font>
      </property>
@@ -74,36 +74,36 @@
     <widget class="QPlainTextEdit" name="nbEvt">
      <property name="geometry">
       <rect>
-       <x>190</x>
+       <x>210</x>
        <y>50</y>
        <width>71</width>
        <height>31</height>
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="confLambda">
+    <widget class="QLabel" name="cfLambdAr">
      <property name="geometry">
       <rect>
-       <x>320</x>
+       <x>330</x>
        <y>50</y>
-       <width>61</width>
+       <width>121</width>
        <height>21</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
+       <pointsize>11</pointsize>
        <italic>false</italic>
       </font>
      </property>
      <property name="text">
-      <string>Lambda : </string>
+      <string>Lambda arrivées :</string>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="varLambda">
+    <widget class="QPlainTextEdit" name="varLambdArr">
      <property name="geometry">
       <rect>
-       <x>380</x>
+       <x>450</x>
        <y>50</y>
        <width>71</width>
        <height>31</height>
@@ -113,20 +113,20 @@
     <widget class="QLabel" name="confTemps">
      <property name="geometry">
       <rect>
-       <x>510</x>
+       <x>560</x>
        <y>50</y>
-       <width>111</width>
+       <width>151</width>
        <height>21</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
+       <pointsize>11</pointsize>
        <italic>false</italic>
       </font>
      </property>
      <property name="text">
-      <string>Période de temps : </string>
+      <string>Lambda traitements : </string>
      </property>
     </widget>
     <widget class="QCommandLinkButton" name="validPara">
@@ -142,14 +142,33 @@
       <string>Valider</string>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="varTemps">
+    <widget class="QPlainTextEdit" name="varLambdTrt">
      <property name="geometry">
       <rect>
-       <x>620</x>
+       <x>710</x>
        <y>50</y>
        <width>71</width>
        <height>31</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="evtMark">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>110</y>
+       <width>201</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <italic>false</italic>
+      </font>
+     </property>
+     <property name="text">
+      <string>Environnement Markovien</string>
      </property>
     </widget>
    </widget>
@@ -157,7 +176,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>250</y>
+      <y>270</y>
       <width>1061</width>
       <height>181</height>
      </rect>
@@ -167,16 +186,93 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>470</y>
+      <y>490</y>
       <width>1061</width>
       <height>181</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="MatplotlibWidget" name="graphProd">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>700</y>
+      <width>1061</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="confEvt_2">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>250</y>
+      <width>261</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Arrivée des pièces sur le tapis</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="confEvt_3">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>470</y>
+      <width>261</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Temps de traitement par pièce</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="confEvt_4">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>680</y>
+      <width>261</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <italic>false</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Chaine de production</string>
     </property>
    </widget>
    <zorder>groupBox</zorder>
    <zorder>label_4</zorder>
    <zorder>graphArrivee</zorder>
    <zorder>graphTrait</zorder>
+   <zorder>graphProd</zorder>
+   <zorder>confEvt_2</zorder>
+   <zorder>confEvt_3</zorder>
+   <zorder>confEvt_4</zorder>
   </widget>
  </widget>
  <customwidgets>
