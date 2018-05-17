@@ -2,6 +2,7 @@
 # Importation des Librairies
 from PyQt4.QtGui import *
 from pylab import *
+import numpy as np
 import matplotlib.pyplot as plt
 import random as rand
 
@@ -22,7 +23,7 @@ def loiExpo(tabAlea, lambd):
 
 # Genere une liste suivant une loi exponentielle theorique en utilisant la fonction expovariate de la bibliotheque random
 # Prend en parametre lambda
-def loiExpoTheorique(lambd):
+def loiExpoTheorique(lambd, nb):
     resExpoTheo = []
     i = 0
     for i in range(nb):
@@ -82,33 +83,72 @@ class ApplicationViewer(QMainWindow):
         LAM_TRT = float(self.ui.varLambdTrt.toPlainText())
         print("LAM_TRT  " + str(LAM_TRT))
 
-        x=[0,10,100]
-        y=[3,4,5]
-
-        self.ui.graphArrivee.axes.set_xscale('log')
-        self.ui.graphArrivee.axes.set_title('GRAPH')
-
-        self.ui.graphArrivee.axes.plot(x,y)
-        self.ui.graphArrivee.draw()
+        env = self.ui.evtMark.isTristate()
+        if (env == True):
+            print("NON Markov")
+        else:
+            print("Markov")
 
         print("tableau nombres aleatoires")
         tabAlea = gene_rand(NB_SIM)
         print(tabAlea)
         print(len(tabAlea))
 
+        #Process d'arrivee
         print("______________")
         print("loi exponentielle Arrivee")
         tabExpArr = loiExpo(tabAlea, LAM_DA)
-        tabExpArr.sort()
         print(tabExpArr)
 
         print("______________")
+        print("tableau processus poisson Arrivee")
+        tabPoissArr = processPoi(tabExpArr)
+        print(tabPoissArr)
+
+        # Formatage des valeurs de la loi pour affichage
+        list1 = tabAffichageExpo(tabPoissArr)
+
+    ###############################################
+    #Process traitement
+        print("______________")
         print("loi exponentielle Traitement")
         tabExpTrt = loiExpo(tabAlea, LAM_TRT)
-        tabExpTrt.sort()
         print(tabExpTrt)
 
-        sys.exit(app.exec_())
+        print("______________")
+        print("tableau processus poisson Traitement")
+        tabPoissTrt = processPoi(tabExpTrt)
+        print(tabPoissTrt)
+
+        # Formatage des valeurs de la loi pour affichage
+        list2 = tabAffichageExpo(tabPoissTrt)
+
+
+        #Préparation graph processus de poissons
+        y = tabRaie(NB_SIM)
+
+        #x1 = []
+        #x2 = []
+        #for i in range(0,60):
+        #    x1.append(tabAff1[i])
+        #    x2.append(tabAff2[i])
+        #print "x1"
+        #print x1
+        #print len(x1)
+        #print "x2"
+
+
+        #Graph arrivee
+        self.ui.graphArrivee.axes.plot(list1,y)
+        self.ui.graphArrivee.axes.set_xlim([0, 200])
+        self.ui.graphArrivee.draw()
+
+        #Graph traitement
+
+        self.ui.graphTrait.axes.plot(list2,y)
+        self.ui.graphTrait.axes.set_xlim([0, 200])
+        self.ui.graphTrait.draw()
+
 
 # Fonction main
 if __name__=="__main__":
@@ -116,10 +156,7 @@ if __name__=="__main__":
     app = QApplication(sys.argv)
     applicationViewer = ApplicationViewer()
     applicationViewer.show()
-    app.exec_()
-
-
-
+    sys.exit(app.exec_())
 
 
     print("______________")
@@ -128,28 +165,10 @@ if __name__=="__main__":
     print(tabExpoTheorique)
 
 
-
     print("______________")
     print("tableau expo theorique trie")
     tabExpoTheorique.sort()
     print(tabExpoTheorique)
-
-    print("______________")
-    print("tableau processus poisson")
-    tabPoiss = processPoi(tabExp)
-    print(tabPoiss)
-
-    print("______________")
-    print("tableau representant les raies")
-    tabRaie = tabRaie()
-    print(tabRaie)
-
-    print("______________")
-    print("Tableau test")
-    tabStyle = tabAffichageExpo(tabExp)
-    print(tabStyle)
-
-    print "voici la val de ton champ :"
 
     # Traçage du graphique
     plt.plot(tabStyle, tabRaie)
