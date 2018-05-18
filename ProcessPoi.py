@@ -37,6 +37,15 @@ def processPoi(tabEx):
         tabCum.append(tabCum[i-1]+tabEx[i])
     return tabCum
 
+# Genere une liste suivant une loi normale à la valeur absolue pour pouvoir exploiter les valeurs
+def loiNormale(listeAlea1, listeAlea2, lambd):
+    tabNorm = []
+    s=1/lambd
+    m=1/lambd
+    for i in range(len(listeAlea1)):
+        tabNorm.append(math.fabs(math.sqrt(-2*math.log(listeAlea1[i]))*math.cos(2*math.pi*listeAlea2[i]))*s+m)
+    return tabNorm
+
 def classeExp(tab):
     maxi = 0
     dernier = len(tab) - 1
@@ -63,6 +72,66 @@ def tabAffichageExpo(tabExp):
     tabExp.sort()
     return tabExp
 
+def chaineProdtest(tabA, tabB, nb):
+    tabChaine = []
+    tabChaine.append(tabA[0])
+    tabChaine.append(tabA[0] + tabB[0])
+    for i in range(2,nb-1) :
+        tabChaine.append(tabA[i] + (tabB[i+1] - tabB[i]))
+    return tabChaine
+
+def attente(tabarr,valdeb, valfin,nb):
+    cmpt = 0
+    tabIndice = []
+    for i in range(0,nb-1):
+        if valdeb < tabarr[i] <valfin :
+            cmpt = cmpt + 1
+            tabIndice.append(i)
+    return cmpt, tabIndice
+
+def tabToDuree(tab):
+    tabDur =[]
+    tabDur.append(tab[0])
+    for i in range(1,len(tab)):
+        tabDur.append(tab[i]-tab[i-1])
+    return tabDur
+
+def chaineProd(tabA, tabB, nb):
+    duree = tabToDuree(tabB)
+    tabChaine = []
+    xtimeAttente = [tabA[0]]
+    ynbAttente = [0]
+    tabChaine.append(tabA[0])
+    if tabA[1]<duree[0]:
+        xtimeAttente.append(tabA[1])
+        ynbAttente.append(1)
+        tabChaine.append(tabA[0] + duree[0])
+    else:
+        xtimeAttente.append(tabA[1])
+        ynbAttente.append(0)
+        tabChaine.append(tabA[1])
+
+    iArr = 2
+    iDur = 1
+    cumulAtt = 0
+    for i in range(2,nb-1):
+        while iDur < nb-1:
+            valAtt, queue = attente(tabA, tabChaine[i-1], tabChaine[i-1]+duree[iDur],nb)
+            cumulAtt += valAtt
+            if valAtt > 0 :
+                k = 0
+                while k < valAtt :
+                    xtimeAttente.append(tabA[queue[k]])
+                    ynbAttente.append(k+1)
+            tabChaine.append(tabA[iArr] + duree[iDur])
+            cumulAtt = cumulAtt-1
+            iArr += 1
+            iDur+= 1
+
+    return xtimeAttente, ynbAttente
+
+
+
 # Classe permettant d'appeler l'interface
 class ApplicationViewer(QMainWindow):
     def __init__(self, parent=None):
@@ -83,30 +152,38 @@ class ApplicationViewer(QMainWindow):
         LAM_TRT = float(self.ui.varLambdTrt.toPlainText())
         print("LAM_TRT  " + str(LAM_TRT))
 
-        env = self.ui.evtMark.isTristate()
-        if (env == True):
-            print("NON Markov")
-        else:
-            print("Markov")
-
         print("tableau nombres aleatoires")
         tabAlea = gene_rand(NB_SIM)
         print(tabAlea)
         print(len(tabAlea))
 
-        #Process d'arrivee
-        print("______________")
-        print("loi exponentielle Arrivee")
-        tabExpArr = loiExpo(tabAlea, LAM_DA)
-        print(tabExpArr)
 
-        print("______________")
-        print("tableau processus poisson Arrivee")
-        tabPoissArr = processPoi(tabExpArr)
-        print(tabPoissArr)
+        if self.ui.evtMark.isChecked() :
+            print("Markov")
+            #Process d'arrivee
+            print("______________")
+            print("loi exponentielle Arrivee")
+            tabExpArr = loiExpo(tabAlea, LAM_DA)
+            print(tabExpArr)
 
-        # Formatage des valeurs de la loi pour affichage
-        list1 = tabAffichageExpo(tabPoissArr)
+            print("______________")
+            print("tableau processus poisson Arrivee")
+            tabPoissArr = processPoi(tabExpArr)
+            print(tabPoissArr)
+
+            # Formatage des valeurs de la loi pour affichage
+            x1 = tabAffichageExpo(tabPoissArr)
+
+        else:
+            print("test loi normale")
+            tabAlea1 = gene_rand(NB_SIM)
+            tabAlea2 = gene_rand(NB_SIM)
+            tabNormale = loiNormale(tabAlea1, tabAlea2, LAM_DA)
+            print(tabNormale)
+            tabNormalePoi = processPoi(tabNormale)
+            x1 = tabAffichageExpo(tabNormalePoi)
+
+
 
     ###############################################
     #Process traitement
@@ -120,34 +197,29 @@ class ApplicationViewer(QMainWindow):
         tabPoissTrt = processPoi(tabExpTrt)
         print(tabPoissTrt)
 
+
         # Formatage des valeurs de la loi pour affichage
-        list2 = tabAffichageExpo(tabPoissTrt)
+        x2 = tabAffichageExpo(tabPoissTrt)
 
-
-        #Préparation graph processus de poissons
         y = tabRaie(NB_SIM)
 
-        #x1 = []
-        #x2 = []
-        #for i in range(0,60):
-        #    x1.append(tabAff1[i])
-        #    x2.append(tabAff2[i])
-        #print "x1"
-        #print x1
-        #print len(x1)
-        #print "x2"
-
-
         #Graph arrivee
-        self.ui.graphArrivee.axes.plot(list1,y)
-        self.ui.graphArrivee.axes.set_xlim([0, 200])
+        self.ui.graphArrivee.axes.plot(x1,y)
+        self.ui.graphArrivee.axes.set_xlim([0, 600])
         self.ui.graphArrivee.draw()
 
         #Graph traitement
-
-        self.ui.graphTrait.axes.plot(list2,y)
-        self.ui.graphTrait.axes.set_xlim([0, 200])
+        self.ui.graphTrait.axes.plot(x2,y)
+        self.ui.graphTrait.axes.set_xlim([0, 600])
         self.ui.graphTrait.draw()
+
+
+        ####################################
+        #dernier graph
+        xProd, yProd = chaineProd(tabPoissArr, tabPoissTrt, NB_SIM)
+        print("Chaine de production")
+        print(xProd)
+        print(yProd)
 
 
 # Fonction main
