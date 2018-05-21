@@ -65,12 +65,13 @@ def tabRaie(nb):
 # Permet de généré une liste utilisée pour la représentation graphique des raies d'une loi
 # On entoure chaque valeur de notre liste avec une valeur très proche inférieur et supérieur qui prendront comme valeur 0
 def tabAffichageExpo(tabExp):
+    tabExp_Copy = tabExp[:]
     print(len(tabExp))
     for i in range(len(tabExp)):
-        tabExp.append(tabExp[i]-0.0001)
-        tabExp.append(tabExp[i]+0.0001)
-    tabExp.sort()
-    return tabExp
+        tabExp_Copy.append(tabExp[i]-0.0001)
+        tabExp_Copy.append(tabExp[i]+0.0001)
+    tabExp_Copy.sort()
+    return tabExp_Copy
 
 def chaineProdtest(tabA, tabB, nb):
     tabChaine = []
@@ -96,9 +97,46 @@ def tabToDuree(tab):
         tabDur.append(tab[i]-tab[i-1])
     return tabDur
 
+def stop_piece(piece, piece_suivante, tmp_fabricatio):
+    intervalle = piece_suivante - piece
+    if intervalle < tmp_fabricatio:
+        return True
+    else:
+        return False
+
+# def file_attente(l_flie, da):
+#
+#     if
+
+#def association(l_arrive, l_duree):
+#    l_asso=[]
+ #   for arr in l_arrive:
+  #      index = l_arrive.index(arr)
+   #     l_asso.append((arr, l_duree[index]))
+    #return l_asso
+
+ 
 def chaineProd(tabA, tabB, nb):
     duree = tabToDuree(tabB)
+    print(" ")
+    print("Tableau des durrees ")
+    print(duree)
+    #l_association = association(tabA, duree)
     tabChaine = []
+
+    #for tpl_arr in l_association:
+    #    index = l_association.index(tpl_arr)
+    #    try:
+     #       before_tpl = l_association[index - 1]
+    #        intervalle = tpl_arr[0] - before_tpl[0]
+    #        if intervalle < before_tpl[1]:
+
+
+
+    #    except IndexError as e:
+     #       pass
+
+
     xtimeAttente = [tabA[0]]
     ynbAttente = [0]
     tabChaine.append(tabA[0])
@@ -115,7 +153,9 @@ def chaineProd(tabA, tabB, nb):
     iDur = 1
     cumulAtt = 0
     for i in range(2,nb-1):
-        while iDur < nb-1:
+        nb_iteration = 0
+        while iDur < nb-1 and nb_iteration != nb:
+            nb_iteration += 1
             valAtt, queue = attente(tabA, tabChaine[i-1], tabChaine[i-1]+duree[iDur],nb)
             cumulAtt += valAtt
             if valAtt > 0 :
