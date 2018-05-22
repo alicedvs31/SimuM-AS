@@ -5,7 +5,6 @@ from pylab import *
 import numpy as np
 import matplotlib.pyplot as plt
 import random as rand
-
 import interSimu
 from interSimu import Ui_MainWindow
 
@@ -16,13 +15,15 @@ def gene_rand(nb):
     l = [round(rand.random(),4) for i in range(nb)]
     return l
 
+
 # Genere une liste de nombre suivant une loi exponentielle prenant en paramètre une liste de nombre aléatoire et lambda
 def loiExpo(tabAlea, lambd):
     res = [round((-math.log(i)/lambd),4) for i in tabAlea]
     return res
 
+
 # Genere une liste suivant une loi exponentielle theorique en utilisant la fonction expovariate de la bibliotheque random
-# Prend en parametre lambda
+# Prend en parametre lambda, et le nombre de simulation
 def loiExpoTheorique(lambd, nb):
     resExpoTheo = []
     i = 0
@@ -30,6 +31,9 @@ def loiExpoTheorique(lambd, nb):
         resExpoTheo.append(rand.expovariate(lambd))
     return resExpoTheo
 
+
+# Genere une liste de nombre aleatoires suivant une loi de poisson
+#prend en parametre le tableau de valeurs aleatoires genere par la loi exponentielle
 def processPoi(tabEx):
     tabCum = []
     tabCum.append(tabEx[0])
@@ -37,7 +41,9 @@ def processPoi(tabEx):
         tabCum.append(tabCum[i-1]+tabEx[i])
     return tabCum
 
+
 # Genere une liste suivant une loi normale à la valeur absolue pour pouvoir exploiter les valeurs
+#prend en parametre deux listes de nombres alea de taille NB_SIM et lambda
 def loiNormale(listeAlea1, listeAlea2, lambd):
     tabNorm = []
     s=1/lambd
@@ -46,11 +52,6 @@ def loiNormale(listeAlea1, listeAlea2, lambd):
         tabNorm.append(math.fabs(math.sqrt(-2*math.log(listeAlea1[i]))*math.cos(2*math.pi*listeAlea2[i]))*s+m)
     return tabNorm
 
-def classeExp(tab):
-    maxi = 0
-    dernier = len(tab) - 1
-    maxiTabExp = tab[dernier]
-    print(maxiTabExp)
 
 # Renvoie un tableau contenant uniquement des 1 entouré de deux 0
 # Cette liste permet ensuite de tracer le spectre de raie en montant à 1 pour chaque valeur de notre liste et restant à 0 le reste du temps
@@ -61,6 +62,7 @@ def tabRaie(nb):
         resRaie.append(1)
         resRaie.append(0)
     return resRaie
+
 
 # Permet de généré une liste utilisée pour la représentation graphique des raies d'une loi
 # On entoure chaque valeur de notre liste avec une valeur très proche inférieur et supérieur qui prendront comme valeur 0
@@ -73,23 +75,8 @@ def tabAffichageExpo(tabExp):
     tabExp_Copy.sort()
     return tabExp_Copy
 
-def chaineProdtest(tabA, tabB, nb):
-    tabChaine = []
-    tabChaine.append(tabA[0])
-    tabChaine.append(tabA[0] + tabB[0])
-    for i in range(2,nb-1) :
-        tabChaine.append(tabA[i] + (tabB[i+1] - tabB[i]))
-    return tabChaine
 
-def attente(tabarr,valdeb, valfin,nb):
-    cmpt = 0
-    tabIndice = []
-    for i in range(0,nb-1):
-        if valdeb < tabarr[i] <valfin :
-            cmpt = cmpt + 1
-            tabIndice.append(i)
-    return cmpt, tabIndice
-
+# Permet de transformer le tableau de poisson des traitement en tableau de duree
 def tabToDuree(tab):
     tabDur =[]
     tabDur.append(tab[0])
@@ -97,78 +84,15 @@ def tabToDuree(tab):
         tabDur.append(tab[i]-tab[i-1])
     return tabDur
 
+
+# Permet de dire si une piece va etre mise en attente
+# prend en parametre l'arrivee de la piece, sa duree de traitement et l'arrivee de la piece suivante
 def stop_piece(piece, piece_suivante, tmp_fabricatio):
     intervalle = piece_suivante - piece
     if intervalle < tmp_fabricatio:
         return True
     else:
         return False
-
-# def file_attente(l_flie, da):
-#
-#     if
-
-#def association(l_arrive, l_duree):
-#    l_asso=[]
- #   for arr in l_arrive:
-  #      index = l_arrive.index(arr)
-   #     l_asso.append((arr, l_duree[index]))
-    #return l_asso
-
- 
-def chaineProd(tabA, tabB, nb):
-    duree = tabToDuree(tabB)
-    print(" ")
-    print("Tableau des durrees ")
-    print(duree)
-    #l_association = association(tabA, duree)
-    tabChaine = []
-
-    #for tpl_arr in l_association:
-    #    index = l_association.index(tpl_arr)
-    #    try:
-     #       before_tpl = l_association[index - 1]
-    #        intervalle = tpl_arr[0] - before_tpl[0]
-    #        if intervalle < before_tpl[1]:
-
-
-
-    #    except IndexError as e:
-     #       pass
-
-
-    xtimeAttente = [tabA[0]]
-    ynbAttente = [0]
-    tabChaine.append(tabA[0])
-    if tabA[1]<duree[0]:
-        xtimeAttente.append(tabA[1])
-        ynbAttente.append(1)
-        tabChaine.append(tabA[0] + duree[0])
-    else:
-        xtimeAttente.append(tabA[1])
-        ynbAttente.append(0)
-        tabChaine.append(tabA[1])
-
-    iArr = 2
-    iDur = 1
-    cumulAtt = 0
-    for i in range(2,nb-1):
-        nb_iteration = 0
-        while iDur < nb-1 and nb_iteration != nb:
-            nb_iteration += 1
-            valAtt, queue = attente(tabA, tabChaine[i-1], tabChaine[i-1]+duree[iDur],nb)
-            cumulAtt += valAtt
-            if valAtt > 0 :
-                k = 0
-                while k < valAtt :
-                    xtimeAttente.append(tabA[queue[k]])
-                    ynbAttente.append(k+1)
-            tabChaine.append(tabA[iArr] + duree[iDur])
-            cumulAtt = cumulAtt-1
-            iArr += 1
-            iDur+= 1
-
-    return xtimeAttente, ynbAttente
 
 
 
@@ -185,6 +109,7 @@ class ApplicationViewer(QMainWindow):
         self.ui.validPara.clicked.connect(self.action_bouton)
 
     def action_bouton(self):
+        # Bloc recuperant les var de l'interface saisies par l'utilisateur
         NB_SIM = int(self.ui.nbEvt.toPlainText())
         print("NB_SIM  " + str(NB_SIM))
         LAM_DA = float(self.ui.varLambdArr.toPlainText())
@@ -192,20 +117,19 @@ class ApplicationViewer(QMainWindow):
         LAM_TRT = float(self.ui.varLambdTrt.toPlainText())
         print("LAM_TRT  " + str(LAM_TRT))
 
-        print("tableau nombres aleatoires")
+        # Generation des nombres aleatoires
         tabAlea = gene_rand(NB_SIM)
-        print(tabAlea)
-        print(len(tabAlea))
 
-
+        # Si l'utilisateur a choisit d'etre en environnement markovien
         if self.ui.evtMark.isChecked() :
             print("Markov")
-            #Process d'arrivee
+            #Process d'arrivee loi exponentielle
             print("______________")
             print("loi exponentielle Arrivee")
             tabExpArr = loiExpo(tabAlea, LAM_DA)
             print(tabExpArr)
 
+            #Process d'arrivee loi de poisson
             print("______________")
             print("tableau processus poisson Arrivee")
             tabPoissArr = processPoi(tabExpArr)
@@ -214,12 +138,17 @@ class ApplicationViewer(QMainWindow):
             # Formatage des valeurs de la loi pour affichage
             x1 = tabAffichageExpo(tabPoissArr)
 
+        # Sinon on est en processus non markovien
         else:
-            print("test loi normale")
+            #Process d'arrivee loi normale
+            print("loi normale Arrivee")
+            # Generation de deux tableau de valeurs aleatoires
             tabAlea1 = gene_rand(NB_SIM)
             tabAlea2 = gene_rand(NB_SIM)
             tabNormale = loiNormale(tabAlea1, tabAlea2, LAM_DA)
             print(tabNormale)
+
+            #Process arrivee loi normale
             tabNormalePoi = processPoi(tabNormale)
             x1 = tabAffichageExpo(tabNormalePoi)
 
@@ -256,10 +185,7 @@ class ApplicationViewer(QMainWindow):
 
         ####################################
         #dernier graph
-        xProd, yProd = chaineProd(tabPoissArr, tabPoissTrt, NB_SIM)
-        print("Chaine de production")
-        print(xProd)
-        print(yProd)
+
 
 
 # Fonction main
